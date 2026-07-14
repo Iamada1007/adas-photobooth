@@ -19,6 +19,7 @@
 
         <div class="canvas-shell">
           <canvas id="boothCanvas" width="1600" height="2200" aria-label="四格大头贴画面"></canvas>
+          <img id="comicPreview" class="comic-preview" alt="漫画脸生成结果" hidden>
           <div class="countdown" id="countdown" hidden>3</div>
           <div class="sparkle s1"></div>
           <div class="sparkle s2"></div>
@@ -43,6 +44,14 @@
           <button id="downloadButton" class="button ghost" type="button" disabled>
             <span class="icon">⬇</span>
             下载成品
+          </button>
+          <button id="generateButton" class="button magic" type="button" disabled>
+            <span class="icon">✧</span>
+            生成漫画脸
+          </button>
+          <button id="downloadComicButton" class="button ghost" type="button" disabled>
+            <span class="icon">⬇</span>
+            下载漫画
           </button>
           <button id="finishButton" class="button done" type="button" disabled>
             <span class="icon">✓</span>
@@ -111,10 +120,22 @@
 
         <section class="panel qr-panel">
           <h2>扫码下载</h2>
-          <div id="qrBox" class="qr-box">
-            <span>拍完生成</span>
+          <div class="qr-grid">
+            <div class="qr-item">
+              <h3>原图</h3>
+              <div id="qrBox" class="qr-box">
+                <span>拍完生成</span>
+              </div>
+              <a id="shareLink" class="share-link" href="#" target="_blank" rel="noreferrer" hidden>打开原图链接</a>
+            </div>
+            <div class="qr-item">
+              <h3>漫画</h3>
+              <div id="comicQrBox" class="qr-box">
+                <span>生成后出现</span>
+              </div>
+              <a id="comicShareLink" class="share-link" href="#" target="_blank" rel="noreferrer" hidden>打开漫画链接</a>
+            </div>
           </div>
-          <a id="shareLink" class="share-link" href="#" target="_blank" rel="noreferrer" hidden>打开下载链接</a>
         </section>
 
         <p class="status" id="statusText">先上传相框，再打开摄像头。</p>
