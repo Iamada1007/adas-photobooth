@@ -18,14 +18,24 @@ http://localhost:4288
 
 这个版本已经可以部署成公开 HTTPS 网站。部署后，手机、电脑、平板只要打开同一个网址就能用。
 
-推荐用 Render：
+推荐用 Netlify：
 
 1. 把这个 `photobooth` 文件夹里的文件上传到 GitHub 仓库。
-2. 在 Render 新建 Web Service。
-3. Root Directory 留空。
-4. Build Command 用 `npm install`。
-5. Start Command 用 `npm start`。
-6. 部署完成后，用 Render 给的 HTTPS 地址打开。
+2. 在 Netlify 新建项目，选择这个 GitHub 仓库。
+3. Build command 留空或填 `npm install`。
+4. Publish directory 填 `.`。
+5. Functions directory 使用默认的 `netlify/functions`。
+6. 部署完成后，用 Netlify 给的 HTTPS 地址打开。
+
+这个版本已经包含 Netlify Functions 和 Netlify Blobs，二维码下载链接会把成品 PNG 临时存到 Netlify。
+
+也可以用 Render：
+
+1. 在 Render 新建 Web Service。
+2. Root Directory 留空。
+3. Build Command 用 `npm install`。
+4. Start Command 用 `npm start`。
+5. 部署完成后，用 Render 给的 HTTPS 地址打开。
 
 可选环境变量：
 
