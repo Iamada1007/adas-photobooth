@@ -8,6 +8,9 @@
     "start": "node server.js",
     "dev": "node server.js"
   },
+  "dependencies": {
+    "@netlify/blobs": "^9.1.2"
+  },
   "engines": {
     "node": ">=18"
   }
