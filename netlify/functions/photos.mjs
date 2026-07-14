@@ -38,18 +38,20 @@ export default async (req) => {
 
   try {
     const payload = await req.json();
-    const match = /^data:image\/png;base64,(.+)$/.exec(payload.image || "");
+    const match = /^data:image\/(png|jpe?g|webp);base64,(.+)$/.exec(payload.image || "");
     if (!match) return json({ error: "Invalid image" }, 400);
 
-    const image = Buffer.from(match[1], "base64");
+    const format = match[1] === "jpeg" ? "jpg" : match[1];
+    const contentType = format === "jpg" ? "image/jpeg" : `image/${format}`;
+    const image = Buffer.from(match[2], "base64");
     if (image.byteLength > MAX_IMAGE_BYTES) return json({ error: "Image too large" }, 413);
 
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-    const key = `${id}.png`;
+    const key = `${id}.${format}`;
     const store = getStore({ name: "adas-photobooth-photos", consistency: "strong" });
     await store.set(key, image, {
       metadata: {
-        contentType: "image/png",
+        contentType,
         uploadedAt: new Date().toISOString(),
       },
     });
