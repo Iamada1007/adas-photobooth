@@ -1,0 +1,14 @@
+{
+  "name": "adas-photobooth",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ada's Photobooth web app",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
