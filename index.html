@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ada's Photobooth</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="booth">
+      <section class="preview-card" aria-label="大头贴预览">
+        <div class="brand-row">
+          <div>
+            <p class="kicker">Ada's Photobooth</p>
+            <h1>Ada's Photobooth</h1>
+          </div>
+          <div class="shot-counter" id="shotCounter">0 / 4</div>
+        </div>
+
+        <div class="canvas-shell">
+          <canvas id="boothCanvas" width="1600" height="2200" aria-label="四格大头贴画面"></canvas>
+          <div class="countdown" id="countdown" hidden>3</div>
+          <div class="sparkle s1"></div>
+          <div class="sparkle s2"></div>
+          <div class="sparkle s3"></div>
+        </div>
+
+        <video id="cameraVideo" playsinline muted aria-hidden="true"></video>
+
+        <div class="main-actions">
+          <button id="cameraButton" class="button primary" type="button">
+            <span class="icon">📷</span>
+            打开摄像头
+          </button>
+          <button id="shootButton" class="button candy" type="button" disabled>
+            <span class="icon">⏱</span>
+            拍下一格
+          </button>
+          <button id="retakeButton" class="button violet" type="button" disabled>
+            <span class="icon">↺</span>
+            重拍上一格
+          </button>
+          <button id="downloadButton" class="button ghost" type="button" disabled>
+            <span class="icon">⬇</span>
+            下载成品
+          </button>
+          <button id="finishButton" class="button done" type="button" disabled>
+            <span class="icon">✓</span>
+            完成/下一张
+          </button>
+        </div>
+      </section>
+
+      <aside class="control-card" aria-label="设置">
+        <section class="panel">
+          <h2>相框</h2>
+          <label class="upload-tile frame-tile" for="frameInput">
+            <input id="frameInput" type="file" accept="image/*">
+            <span class="upload-icon">✦</span>
+            <span>上传整张四格相框</span>
+          </label>
+
+          <div class="segmented" role="radiogroup" aria-label="相框模式">
+            <label>
+              <input type="radio" name="frameMode" value="window" checked>
+              <span>普通模板</span>
+            </label>
+            <label>
+              <input type="radio" name="frameMode" value="overlay">
+              <span>透明模板</span>
+            </label>
+          </div>
+
+          <div class="template-tools">
+            <button id="editTemplateButton" class="mini-button" type="button" disabled>调整拍照框</button>
+            <button id="confirmTemplateButton" class="mini-button" type="button" disabled>确认开始拍摄</button>
+          </div>
+          <input id="templateName" class="template-name" type="text" placeholder="模板名称，例如 Signal 竖版">
+          <button id="saveTemplateButton" class="wide-button" type="button" disabled>保存为模板</button>
+        </section>
+
+        <section class="panel">
+          <h2>贴纸模板</h2>
+          <div id="templateList" class="template-list">
+            <span class="empty-template">还没有保存模板</span>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>照片</h2>
+          <label class="upload-tile photo-tile" for="photoInput">
+            <input id="photoInput" type="file" accept="image/*">
+            <span class="upload-icon">♡</span>
+            <span>相册照片填充四格</span>
+          </label>
+        </section>
+
+        <section class="panel compact">
+          <h2>版式</h2>
+          <div class="segmented" role="radiogroup" aria-label="版式">
+            <label>
+              <input type="radio" name="layout" value="grid">
+              <span>2 x 2</span>
+            </label>
+            <label>
+              <input type="radio" name="layout" value="strip" checked>
+              <span>竖条</span>
+            </label>
+          </div>
+        </section>
+
+        <section class="panel qr-panel">
+          <h2>扫码下载</h2>
+          <div id="qrBox" class="qr-box">
+            <span>拍完生成</span>
+          </div>
+          <a id="shareLink" class="share-link" href="#" target="_blank" rel="noreferrer" hidden>打开下载链接</a>
+        </section>
+
+        <p class="status" id="statusText">先上传相框，再打开摄像头。</p>
+      </aside>
+    </main>
+
+    <script src="./qrcode.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
