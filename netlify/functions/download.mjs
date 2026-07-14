@@ -10,13 +10,19 @@ function text(body, status = 200) {
   });
 }
 
+function contentTypeForName(name) {
+  if (name.endsWith(".jpg") || name.endsWith(".jpeg")) return "image/jpeg";
+  if (name.endsWith(".webp")) return "image/webp";
+  return "image/png";
+}
+
 export default async (req, context) => {
   if (req.method !== "GET") {
     return text("Method not allowed", 405);
   }
 
   const name = context.params.name || "";
-  if (!/^[0-9]+-[a-z0-9]+\.png$/.test(name)) {
+  if (!/^[0-9]+-[a-z0-9]+\.(png|jpg|jpeg|webp)$/.test(name)) {
     return text("Not found", 404);
   }
 
@@ -27,7 +33,7 @@ export default async (req, context) => {
   return new Response(image, {
     status: 200,
     headers: {
-      "Content-Type": "image/png",
+      "Content-Type": contentTypeForName(name),
       "Content-Disposition": `attachment; filename="${name}"`,
       "Cache-Control": "public, max-age=86400",
       "Access-Control-Allow-Origin": "*",
