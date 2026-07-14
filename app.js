@@ -131,6 +131,19 @@ function makeImageFromCanvas(sourceCanvas) {
   });
 }
 
+function makeShareImageDataUrl() {
+  const maxLongSide = 1600;
+  const scale = Math.min(1, maxLongSide / Math.max(canvas.width, canvas.height));
+  const shareCanvas = document.createElement("canvas");
+  shareCanvas.width = Math.round(canvas.width * scale);
+  shareCanvas.height = Math.round(canvas.height * scale);
+  const shareCtx = shareCanvas.getContext("2d");
+  shareCtx.fillStyle = "#ffffff";
+  shareCtx.fillRect(0, 0, shareCanvas.width, shareCanvas.height);
+  shareCtx.drawImage(canvas, 0, 0, shareCanvas.width, shareCanvas.height);
+  return shareCanvas.toDataURL("image/jpeg", 0.88);
+}
+
 function coverRect(sourceW, sourceH, targetW, targetH, zoom = 1) {
   const scale = Math.max(targetW / sourceW, targetH / sourceH) * zoom;
   const width = sourceW * scale;
@@ -690,10 +703,11 @@ async function finishPhoto() {
   setStatus("成品已生成，可以下载或扫码保存。");
 
   try {
+    const shareImage = makeShareImageDataUrl();
     const response = await fetch("/api/photos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ image: state.finalDataUrl }),
+      body: JSON.stringify({ image: shareImage }),
     });
 
     if (!response.ok) throw new Error("save failed");
@@ -702,7 +716,7 @@ async function finishPhoto() {
     shareLink.href = payload.downloadUrl;
     shareLink.hidden = false;
   } catch (error) {
-    qrBox.innerHTML = "<span>本地服务打开时生成二维码</span>";
+    qrBox.innerHTML = "<span>二维码生成失败，请先下载保存</span>";
   }
 }
 
