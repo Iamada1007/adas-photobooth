@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: adas-photobooth
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: PHOTO_TTL_HOURS
+        value: "24"
