@@ -6,16 +6,11 @@ const statusText = document.querySelector("#statusText");
 const shotCounter = document.querySelector("#shotCounter");
 const qrBox = document.querySelector("#qrBox");
 const shareLink = document.querySelector("#shareLink");
-const comicPreview = document.querySelector("#comicPreview");
-const comicQrBox = document.querySelector("#comicQrBox");
-const comicShareLink = document.querySelector("#comicShareLink");
 
 const cameraButton = document.querySelector("#cameraButton");
 const shootButton = document.querySelector("#shootButton");
 const retakeButton = document.querySelector("#retakeButton");
 const downloadButton = document.querySelector("#downloadButton");
-const generateButton = document.querySelector("#generateButton");
-const downloadComicButton = document.querySelector("#downloadComicButton");
 const finishButton = document.querySelector("#finishButton");
 const frameInput = document.querySelector("#frameInput");
 const photoInput = document.querySelector("#photoInput");
@@ -58,9 +53,6 @@ const state = {
   templates: [],
   finalDataUrl: "",
   originalDownloadUrl: "",
-  comicDataUrl: "",
-  comicDownloadUrl: "",
-  generatingComic: false,
   audioContext: null,
 };
 
@@ -153,23 +145,12 @@ function makeShareImageDataUrl() {
   return shareCanvas.toDataURL("image/jpeg", 0.88);
 }
 
-function resetComicResult() {
-  state.comicDataUrl = "";
-  state.comicDownloadUrl = "";
-  comicPreview.hidden = true;
-  comicPreview.removeAttribute("src");
-  comicQrBox.innerHTML = "<span>生成后出现</span>";
-  comicShareLink.hidden = true;
-  comicShareLink.removeAttribute("href");
-}
-
 function resetFinalOutputs(message = "拍完生成") {
   state.finalDataUrl = "";
   state.originalDownloadUrl = "";
   qrBox.innerHTML = `<span>${message}</span>`;
   shareLink.hidden = true;
   shareLink.removeAttribute("href");
-  resetComicResult();
 }
 
 function coverRect(sourceW, sourceH, targetW, targetH, zoom = 1) {
@@ -199,8 +180,6 @@ function updateActionButtons() {
       : `<span class="icon">⏱</span> 拍第 ${state.shots.length + 1} 格`;
   retakeButton.disabled = state.shooting || state.shots.length === 0 || !hasSource || calibrationOpen;
   downloadButton.disabled = !state.finalDataUrl && state.shots.length < 4;
-  generateButton.disabled = !state.finalDataUrl || state.generatingComic || state.shooting;
-  downloadComicButton.disabled = !state.comicDataUrl;
   finishButton.disabled = !state.finalDataUrl || state.shooting;
   editTemplateButton.disabled = !state.frameImage || state.shooting;
   confirmTemplateButton.disabled = !state.frameImage || !state.editingTemplate || state.shooting;
@@ -726,7 +705,6 @@ async function finishPhoto() {
   render();
   state.finalDataUrl = canvas.toDataURL("image/png");
   state.originalDownloadUrl = "";
-  resetComicResult();
   downloadButton.disabled = false;
   setStatus("成品已生成，可以下载或扫码保存。");
 
@@ -746,42 +724,6 @@ async function finishPhoto() {
     shareLink.hidden = false;
   } catch (error) {
     qrBox.innerHTML = "<span>二维码生成失败，请先下载保存</span>";
-  }
-}
-
-async function generateComicFace() {
-  if (!state.finalDataUrl || state.generatingComic) return;
-  state.generatingComic = true;
-  generateButton.disabled = true;
-  comicQrBox.innerHTML = "<span>生成中</span>";
-  setStatus("正在生成漫画脸，画框会尽量保持不变。");
-
-  try {
-    const sourceImage = makeShareImageDataUrl();
-    const response = await fetch("/api/generate-comic", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ image: sourceImage }),
-    });
-    const payload = await response.json();
-    if (!response.ok || !payload.image || !payload.downloadUrl) {
-      throw new Error(payload.error || "generate failed");
-    }
-
-    state.comicDataUrl = payload.image;
-    state.comicDownloadUrl = payload.downloadUrl;
-    comicPreview.src = state.comicDataUrl;
-    comicPreview.hidden = false;
-    renderQr(payload.downloadUrl, comicQrBox);
-    comicShareLink.href = payload.downloadUrl;
-    comicShareLink.hidden = false;
-    setStatus("漫画脸已生成，可以扫码保存漫画版。");
-  } catch (error) {
-    comicQrBox.innerHTML = "<span>生成失败</span>";
-    setStatus(error.message === "doubao not configured" ? "还没有配置豆包 API Key。" : "漫画脸生成失败，可以稍后再试。");
-  } finally {
-    state.generatingComic = false;
-    updateActionButtons();
   }
 }
 
@@ -919,14 +861,6 @@ function downloadFinal() {
   link.click();
 }
 
-function downloadComic() {
-  if (!state.comicDataUrl) return;
-  const link = document.createElement("a");
-  link.download = `adas-photobooth-comic-${new Date().toISOString().slice(0, 10)}.jpg`;
-  link.href = state.comicDataUrl;
-  link.click();
-}
-
 function finishCurrentPhoto() {
   state.shots = [];
   state.currentSlot = 0;
@@ -1003,8 +937,6 @@ cameraButton.addEventListener("click", startCamera);
 shootButton.addEventListener("click", shootNextSlot);
 retakeButton.addEventListener("click", retakeLastShot);
 downloadButton.addEventListener("click", downloadFinal);
-generateButton.addEventListener("click", generateComicFace);
-downloadComicButton.addEventListener("click", downloadComic);
 finishButton.addEventListener("click", finishCurrentPhoto);
 editTemplateButton.addEventListener("click", () => {
   if (!state.frameImage) return;
