@@ -22,7 +22,7 @@ export default async (req, context) => {
   }
 
   const name = context.params.name || "";
-  if (!/^[0-9]+-[a-z0-9]+(?:-comic)?\.(png|jpg|jpeg|webp)$/.test(name)) {
+  if (!/^[0-9]+-[a-z0-9]+\.(png|jpg|jpeg|webp)$/.test(name)) {
     return text("Not found", 404);
   }
 
